@@ -1,0 +1,60 @@
+version: '3.7'
+
+services:
+  powerdb:
+    build: powerdnsmysql
+    container_name: powerdb
+    hostname: powerdb
+    ports:
+      - "33307:3306"
+    volumes:
+      - pdbvolume:/var/lib/mysql
+      - ./.docker-volumes/db/powerdb/var/log:/var/log/mysql
+    environment:
+      - TZ=America/Los_Angeles
+    restart: always
+
+  powerdns:
+    build: powerdns
+    hostname: powerdns
+    container_name: powerdns
+    depends_on:
+      - powerdb
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+    volumes:
+      - ./docker/volumes/powerdns/pdns.d:/etc/powerdns/pdns.d
+    environment:
+      - POWERDB_HOST=powerdb
+      - POWERDB_NAME=powerdns
+      - POWERDB_USER=pdns
+      - POWERDB_PASSWORD=pdns
+      - TZ=America/Los_Angeles
+    restart: always
+
+  poweradmin:
+    build: poweradmin
+    hostname: poweradmin
+    container_name: poweradmin
+    depends_on:
+      - powerdb
+      - powerdns
+    ports:
+      - "8180:80"
+    volumes:
+      - ./.docker-volumes/poweradmin/var/log/apache2:/var/log/apache2
+    environment:
+      - POWERDB_HOST=powerdb
+      - POWERDB_PORT=3306
+      - POWERDB_NAME=powerdns
+      - POWERDB_USER=pdns
+      - POWERDB_PASSWORD=pdns
+      - TZ=America/Los_Angeles
+
+networks:
+  default:
+    name: ispdns
+
+volumes:
+  pdbvolume:
