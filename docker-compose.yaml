@@ -11,7 +11,7 @@ services:
       - pdbvolume:/var/lib/mysql
       - ./.docker-volumes/db/powerdb/var/log:/var/log/mysql
     environment:
-      - TZ=America/Los_Angeles
+      - TZ=Asia/Dhaka
     restart: always
 
   powerdns:
@@ -30,7 +30,7 @@ services:
       - POWERDB_NAME=powerdns
       - POWERDB_USER=pdns
       - POWERDB_PASSWORD=pdns
-      - TZ=America/Los_Angeles
+      - TZ=Asia/Dhaka
     restart: always
 
   poweradmin:
@@ -50,7 +50,7 @@ services:
       - POWERDB_NAME=powerdns
       - POWERDB_USER=pdns
       - POWERDB_PASSWORD=pdns
-      - TZ=America/Los_Angeles
+      - TZ=Asia/Dhaka
 
 networks:
   default:
